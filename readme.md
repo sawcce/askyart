@@ -1,6 +1,6 @@
 # ASKYART
 
-Simple program to transfor pictures into ascii art
+Simple program to transform pictures into ascii art
 
 # Status
 
