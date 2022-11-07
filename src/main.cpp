@@ -116,6 +116,8 @@ int main(int argc, char *argv[]) {
 
   std::fstream out;
   out.open(destination, fstream::in | fstream::out | fstream::trunc);
+  
+  processImage(out, image);
 
   if (!out.is_open()) {
     std::cerr << "Err: could not open file: \"" << destination << "\"\n";
@@ -123,24 +125,6 @@ int main(int argc, char *argv[]) {
   }
 
   std::cout << program.get<std::string>("destination") << "\n";
-
-  if (image.channels() == 3) {
-    for (int y = 0; y < image.rows; y++) {
-      for (int x = 0; x < image.cols; x++) {
-        auto colors = image.at<cv::Vec3b>(y, x);
-        processRgb(out, colors);
-      }
-      out << "\n";
-    }
-  } else {
-    for (int y = 0; y < image.rows; y++) {
-      for (int x = 0; x < image.cols; x++) {
-        uchar pixel = image.at<uchar>(y, x);
-        processGrayscale(out, pixel);
-      }
-      out << "\n";
-    }
-  }
 
   if (program["--show"] == true) {
     cout << "Result:\n";
@@ -151,6 +135,27 @@ int main(int argc, char *argv[]) {
   out.close();
 
   return 0;
+}
+
+void processImage(std::fstream &stream, Mat image) {
+  if (image.channels() == 3) {
+    for (int y = 0; y < image.rows; y++) {
+      for (int x = 0; x < image.cols; x++) {
+        auto colors = image.at<cv::Vec3b>(y, x);
+        processRgb(stream, colors);
+      }
+      stream << "\n";
+    }
+    return;
+  }
+
+  for (int y = 0; y < image.rows; y++) {
+    for (int x = 0; x < image.cols; x++) {
+      uchar pixel = image.at<uchar>(y, x);
+      processGrayscale(stream, pixel);
+    }
+    stream << "\n";
+  }
 }
 
 // Maps a color value (0 to 255) to an index in the "color" array (0 to 69)
